@@ -41,9 +41,12 @@ jobs:
 
       - name: Download IPA
         run: |
-          mkdir -p ipa
-          curl -fsSL "${{ inputs.ipa_url }}" -o ipa/spotify.ipa
-          case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
+           python -m pip install gdown
+           gdown"${{https://drive.google.com/file/d/1s8GvNBBdFUNmZGtnlNx-FoiWeoUwkLL_/view?usp=drivesdk}}" -0 com.spotify.client-9.1.90-Decrypted.ipa
+           unzip -t com.spotify.client-9.1.90-Decrypted.ipa
+        # mkdir -p ipa
+        #  curl -fsSL "${{ inputs.ipa_url }}" -o ipa/spotify.ipa
+       # case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
 
       - run: make release
 
