@@ -3,7 +3,7 @@ name: Build IPA from your own Spotify IPA
 on:
   workflow_dispatch:
     inputs:
-      ipa_url: https://armconverter.com/decryptedappstore/download/324684580/com.spotify.client/892606471?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDgwNDM3IiwiaWF0IjoxNzk0MjA5NzIyLCJleHAiOjE3OTQyMjA1MjIsImFwcGlkIjozMjQ2ODQ1ODAsImFwcHZlciI6Ijg5MjYwNjQ3MSJ9.XbCq3FrV_fhMNZNvq3JCufyuDQMOcpKAJg6Yt-Ol33o
+      ipa_url:
         description: "Direct link to a decrypted Spotify IPA"
         required: true
         type: string
@@ -40,13 +40,13 @@ jobs:
           python3 -m pip install --break-system-packages git+https://github.com/asdfzxcvbn/pyzule-rw.git
 
       - name: Download IPA
+        env:
+          IPA_URL: ${{ inputs.ipa_url }}
         run: |
-           python -m pip install gdown
-           gdown"${{https://drive.google.com/file/d/1s8GvNBBdFUNmZGtnlNx-FoiWeoUwkLL_/view?usp=drivesdk}}" -0 com.spotify.client-9.1.90-Decrypted.ipa
-           unzip -t com.spotify.client-9.1.90-Decrypted.ipa
-        # mkdir -p ipa
-        #  curl -fsSL "${{ inputs.ipa_url }}" -o ipa/spotify.ipa
-       # case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
+          mkdir -p ipa
+          curl -fL --retry 3 "$IPA_URL" -o ipa/spotify.ipa
+          unzip -tq ipa/spotify.ipa
+
 
       - run: make release
 
